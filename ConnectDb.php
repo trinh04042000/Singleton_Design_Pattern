@@ -12,6 +12,16 @@ class ConnectDb
     private $pass = 'root1234';
     private $dbname = 'singletonDb';
 
+    /**
+     * Check Connected database query
+     * @param $query
+     * @return void
+     */
+    private function checkConnectDb($query)
+    {
+        $query = $this->conn->query($query) or die($this->conn->error . __LINE__);
+    }
+
     // The db connection is established in the private constructor.
     private function __construct()
     {
@@ -21,6 +31,9 @@ class ConnectDb
         }
     }
 
+    /**
+     * @return ConnectDb|null
+     */
     public static function getInstance()
     {
         if (!self::$instance) {
@@ -30,45 +43,69 @@ class ConnectDb
         return self::$instance;
     }
 
+    /**
+     * @return mysqli
+     */
     public function getConnection()
     {
         return $this->conn;
     }
 
-    public function select($query) {
-        $result = $this->conn->query($query) or die($this->conn->errorCode().__LINE__);
+    /**
+     * Select database query
+     * @param $query
+     * @return bool|void
+     */
+    public function select($query)
+    {
+        $result = $this->checkConnectDb($query);
 
         if ($result->num_rows > 0) {
-              return $result;
-        } else {
-            return FALSE;
+            return $result;
         }
+
+        return false;
     }
 
+    /**
+     * Update database query
+     * @param $query
+     * @return bool|void
+     */
     public function insert($query) {
-        $insert = $this->conn->query($query) or die($this->conn->error.__LINE__);
+        $insert = $this->checkConnectDb($query);
         if ($insert) {
-           return $insert;
-        } else {
-            return FALSE;
+            return $insert;
         }
+
+        return false;
     }
 
+    /**
+     * Update database query
+     * @param $query
+     * @return bool|void
+     */
     public function update($query) {
-        $update = $this->conn->query($query) or die($this->conn->error.__LINE__);
+        $update = $this->checkConnectDb($query);
         if ($update) {
             return $update;
-        } else {
-            return FALSE;
         }
+
+        return false;
     }
 
+    /**
+     * @param $query
+     * @return bool|void
+     */
     public function delete($query) {
-        $delete = $this->conn->query() or die($this->conn->error.__LINE__);
+        $delete = $this->checkConnectDb($query);
         if ($delete) {
             return $delete;
-        } else {
-            return FALSE;
         }
+
+        return false;
+
     }
 }
